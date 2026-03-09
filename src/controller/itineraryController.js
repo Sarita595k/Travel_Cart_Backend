@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Itinerary } from "../model/itineraryModel.js";
 
@@ -7,9 +8,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 export const generateAiTrip = async (req, res) => {
     try {
         const { destination, days, budgetType, interests } = req.body;
-        console.log("Key being used:", process.env.GEMINI_API_KEY)
-        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-
+        console.log("Key being used:", genAI)
+        const model = genAI.getGenerativeModel(
+            { model: "gemini-2.5-flash" })
+        console.log(process.env.GEMINI_API_KEY)
         // Build a detailed prompt using the user's specific inputs
         const prompt = `
             Act as a travel expert. Create a ${days}-day itinerary for ${destination}.
@@ -69,7 +71,7 @@ export const regenerateDay = async (req, res) => {
         const existingTrip = await Itinerary.findById(tripId);
         if (!existingTrip) return res.status(404).json({ message: "Trip not found" });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         // 2. Feed the old plan back to Gemini as context
         const prompt = `

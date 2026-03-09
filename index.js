@@ -1,9 +1,10 @@
 import express from 'express'
 import dotenv from 'dotenv'
+dotenv.config()
 import { connectToDb } from './src/db/config.js'
 import routes from './src/routes/userRoute.js'
 import router from './src/routes/itineraryRoutes.js'
-dotenv.config()
+
 
 const app = express()
 
