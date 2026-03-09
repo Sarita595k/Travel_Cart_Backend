@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Itinerary } from "../model/itineraryModel.js";
 
-const genAI = new GoogleGenerativeAI("AIzaSyCrsLaKEWbWqi0qHj3BLhUkhi1kyprqCLM");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // /api/itinerary/generate-trip
 export const generateAiTrip = async (req, res) => {
