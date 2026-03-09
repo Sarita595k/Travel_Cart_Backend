@@ -1,0 +1,19 @@
+import express from "express";
+import { generateAiTrip, getMyTrips, regenerateDay, toggleFavorite } from "../controller/itineraryController.js";
+import { isAuthenticatedUser } from "../middleware/auth.js"; // auth middleware
+
+const router = express.Router();
+
+// Only authenticated users can call this /api/itinerary/generate-trip
+router.post("/generate-trip", isAuthenticatedUser, generateAiTrip);
+
+// "Updating" trip data
+router.put("/update-day", isAuthenticatedUser, regenerateDay);
+
+// To get history: /api/itinerary/my-trips
+// To get favorites: /api/itinerary/my-trips?isFavorite=true
+router.get("/my-trips", isAuthenticatedUser, getMyTrips);
+
+// URL example: /api/itinerary/favorite/:id
+router.patch("/favorite/:id", isAuthenticatedUser, toggleFavorite);
+export default router;
