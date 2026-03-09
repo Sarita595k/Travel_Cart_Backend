@@ -69,7 +69,7 @@ export const regenerateDay = async (req, res) => {
         const existingTrip = await Itinerary.findById(tripId);
         if (!existingTrip) return res.status(404).json({ message: "Trip not found" });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         // 2. Feed the old plan back to Gemini as context
         const prompt = `
