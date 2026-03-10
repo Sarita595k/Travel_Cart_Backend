@@ -8,15 +8,21 @@ export const registerUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         // Check if user already exists
-        const userExists = await User.findOne({ email });
-        if (userExists) {
-            return res.status(400).json({ message: "User already exists" });
+        if (!password || password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: "Password should be at least 6 characters long"
+            });
         }
 
-        // Hash the password (for security)
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: "User already exists" });
+        }
+
+        // Now safe to hash
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user
         const user = await User.create({
             name,
             email,
