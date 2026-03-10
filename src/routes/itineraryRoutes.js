@@ -8,12 +8,12 @@ const router = express.Router();
 router.post("/generate-trip", isAuthenticatedUser, generateAiTrip);
 
 // "Updating" trip data
-router.put("/update-day", isAuthenticatedUser, regenerateDay);
+router.post("/updateDay", isAuthenticatedUser, regenerateDay);
 
 // To get history: /api/itinerary/my-trips
 // To get favorites: /api/itinerary/my-trips?isFavorite=true
 router.get("/my-trips", isAuthenticatedUser, getMyTrips);
 
 // URL example: /api/itinerary/favorite/:id
-router.patch("/favorite/:id", isAuthenticatedUser, toggleFavorite);
+router.put("/favorite/:id", isAuthenticatedUser, toggleFavorite);
 export default router;

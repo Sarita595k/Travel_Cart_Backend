@@ -6,14 +6,21 @@ import { connectToDb } from './src/db/config.js'
 import routes from './src/routes/userRoute.js'
 import router from './src/routes/itineraryRoutes.js'
 import route from './src/routes/newsRoute.js'
+import { authLimiter, tripLimiter } from './src/middleware/rateLimiter.js'
 
 const app = express()
 
+app.set('trust proxy', 1);
 // adding cors
 app.use(cors());
 
 // app.use(express.static())
 app.use(express.json())
+
+// rate limiter 
+app.use("/api/user/login", authLimiter);
+app.use("/api/user/register", authLimiter);
+app.use("/api/itinerary/generate-trip", tripLimiter);
 
 // user route
 app.use('/api/user', routes)

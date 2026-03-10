@@ -8,24 +8,25 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 export const generateAiTrip = async (req, res) => {
     try {
         const { destination, days, budgetType, interests } = req.body;
-        console.log("Key being used:", genAI)
-        const model = genAI.getGenerativeModel(
-            { model: "gemini-2.5-flash" })
-        console.log(process.env.GEMINI_API_KEY)
-        // Build a detailed prompt using the user's specific inputs
+
+        // FIX 1: Use the correct model name
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        // FIX 2: Mapping "Moderate" or "Budget" to match your Schema Enums
+        let mappedBudget = "Medium";
+        if (budgetType === "Budget") mappedBudget = "Low";
+        if (budgetType === "Luxury") mappedBudget = "High";
+
         const prompt = `
             Act as a travel expert. Create a ${days}-day itinerary for ${destination}.
-            Budget Level: ${budgetType}.
+            Budget Level: ${mappedBudget}.
             Interests: ${interests.join(", ")}.
 
-            Requirements:
-            1. Recommend 3 hotels in ${destination} that fit a ${budgetType} budget.
-            2. Calculate the "Overall Estimated Budget Per Person" in USD for the entire ${days} days (including food, stay, and activities).
-            3. Return ONLY a JSON object with this exact structure:
+            Return ONLY a JSON object with this exact structure:
             {
-                "totalBudgetPerPerson": 0,
-                "suggestedHotels": [{"name": "", "description": "", "priceRange": ""}],
-                "itinerary": [{"day": 1, "morning": "", "afternoon": "", "evening": ""}]
+                "totalBudgetPerPerson": 1200,
+                "suggestedHotels": [{"name": "Hotel Name", "description": "Nice place", "priceRange": "$100-$150"}],
+                "itinerary": [{"day": 1, "morning": "Visit park", "afternoon": "Eat lunch", "evening": "Relax"}]
             }
         `;
 
@@ -33,19 +34,21 @@ export const generateAiTrip = async (req, res) => {
         const response = await result.response;
         const text = response.text();
 
-        // Clean any Markdown formatting (```json ... ```)
-        const cleanJson = JSON.parse(text.replace(/```json|```/g, ""));
+        // Robust JSON extraction
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("AI failed to provide a valid JSON structure.");
+        const cleanJson = JSON.parse(jsonMatch[0]);
 
-        // Save the generated trip to the database
+        // FIX 3: Ensure req.user exists and fields match Schema
         const savedItinerary = await Itinerary.create({
             user: req.user.id,
             destination,
             days,
-            budgetType,
+            budgetType: mappedBudget, // Must match "Low", "Medium", or "High"
             interests,
             totalEstimatedBudget: cleanJson.totalBudgetPerPerson,
             suggestedHotels: cleanJson.suggestedHotels,
-            plan: cleanJson.itinerary
+            plan: cleanJson.itinerary // Matches your schema
         });
 
         res.status(201).json({
@@ -54,14 +57,13 @@ export const generateAiTrip = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("GENERATION ERROR:", error); // Check your VS Code Terminal!
         res.status(500).json({
             success: false,
-            message: "Failed to generate itinerary. Please try again.",
-            error: error
+            message: "Failed to generate itinerary. " + error.message
         });
     }
 };
-
 // regenerate the specific date itinerary
 export const regenerateDay = async (req, res) => {
     try {
