@@ -15,13 +15,26 @@ const app = express()
 // Trust Proxy
 app.set('trust proxy', 1);
 
-//  Combined and Fixed CORS
+const allowedOrigins = [
+    "http://localhost:5173",                 // Local development (Vite)
+    "https://travelcartavsar.netlify.app"    // Production Frontend
+];
+
 const corsOptions = {
-    origin: "https://travelcartavsar.netlify.app",
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 };
+
 app.use(cors(corsOptions));
 
 app.use(express.json())
