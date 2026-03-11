@@ -16,7 +16,7 @@ app.set('trust proxy', 1);
 
 // adding cors
 app.use(cors({
-    origin: "https://travelcartavsar.netlify.app/",
+    origin: "https://travelcartavsar.netlify.app",
     credentials: true
 }));
 // https://travelcartavsar.netlify.app/register
