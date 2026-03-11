@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 
-// Strict limiter for Auth
+// strict limiter for auth only 5
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
@@ -9,7 +9,7 @@ export const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Regular limiter for AI Generation
+// regular limiter for AI Generation only 10 request
 export const tripLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,

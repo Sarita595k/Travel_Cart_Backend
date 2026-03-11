@@ -3,7 +3,7 @@ import { User } from "../model/userModel.js";
 
 export const isAuthenticatedUser = async (req, res, next) => {
     try {
-        // 1. Get token from the header (Format: Bearer <token>)
+        // get token from the header
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith("Bearer")) {
@@ -15,13 +15,13 @@ export const isAuthenticatedUser = async (req, res, next) => {
 
         const token = authHeader.split(" ")[1];
 
-        // 2. Verify the token
+        //  verify the token
         const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-        // 3. Find the user and attach it to the request (req.user)
+        // find the user and attach it to the request (req.user)
         req.user = await User.findById(decodedData.id);
 
-        next(); // Move to the actual controller (like generateAiTrip)
+        next(); //move to the real controller
 
     } catch (error) {
         return res.status(401).json({

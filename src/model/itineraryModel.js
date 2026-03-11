@@ -20,11 +20,11 @@ const itinerarySchema = new mongoose.Schema({
         required: true
     },
     interests: {
-        type: [String], // Array: ["Food", "Adventure"]
+        type: [String], // Array: ["Food", "Adventure","Nature",etc....]
         required: true
     },
     totalEstimatedBudget: {
-        type: Number, // Stores the total amount per person
+        type: Number, // total amount per person
         required: true
     },
     suggestedHotels: [

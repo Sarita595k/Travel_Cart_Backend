@@ -19,4 +19,5 @@ const userSchema = new mongoose.Schema({
         minLength: [6, "Password should be greater than 6 characters"]
     }
 }, { timestamps: true });
+
 export const User = mongoose.model("User", userSchema);
