@@ -15,6 +15,11 @@ const app = express()
 app.set('trust proxy', 1);
 
 // adding cors
+app.use(cors({
+    origin: "https://travelcartavsar.netlify.app/",
+    credentials: true
+}));
+// https://travelcartavsar.netlify.app/register
 app.use(cors());
 
 // app.use(express.static())
