@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please enter your password"],
         minLength: [6, "Password should be greater than 6 characters"]
-    }
+    }, resetPasswordToken: String,
+    resetPasswordExpires: Date,
 }, { timestamps: true });
 
 export const User = mongoose.model("User", userSchema);

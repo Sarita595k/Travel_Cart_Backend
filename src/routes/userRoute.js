@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, registerUser } from "../controller/userController.js";
+import { forgotPassword, loginUser, registerUser, resetPassword } from "../controller/userController.js";
 
 const routes = express.Router()
 
@@ -8,5 +8,7 @@ routes.post("/register", registerUser)
 
 // /api/user/login
 routes.post("/login", loginUser)
-
+// Password Reset Routes
+routes.post("/forgot-password", forgotPassword);
+routes.put("/reset-password/:token", resetPassword);
 export default routes
