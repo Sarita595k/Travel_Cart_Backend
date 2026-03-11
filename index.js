@@ -1,6 +1,5 @@
 import express from 'express'
 import dotenv from 'dotenv'
-dotenv.config()
 import cors from "cors"
 import { connectToDb } from './src/db/config.js'
 import routes from './src/routes/userRoute.js'
@@ -9,45 +8,48 @@ import route from './src/routes/newsRoute.js'
 import { authLimiter, tripLimiter } from './src/middleware/rateLimiter.js'
 import rout from './src/routes/discoverRoute.js'
 
+dotenv.config()
+
 const app = express()
 
-// setting proxy for render deployment
+// Trust Proxy
 app.set('trust proxy', 1);
 
-// adding cors
-app.use(cors({
+//  Combined and Fixed CORS
+const corsOptions = {
     origin: "https://travelcartavsar.netlify.app",
-    credentials: true
-}));
-// https://travelcartavsar.netlify.app/register
-app.use(cors());
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+};
+app.use(cors(corsOptions));
 
-// app.use(express.static())
 app.use(express.json())
 
-// rate limiter different for login,register and trip
+// Rate Limiters
 app.use("/api/user/login", authLimiter);
 app.use("/api/user/register", authLimiter);
 app.use("/api/itinerary/generate-trip", tripLimiter);
 
-// user route
+//  Routes
 app.use('/api/user', routes)
-
-// itinerary route 
 app.use("/api/itinerary", router)
-
-// for news route
 app.use('/api/news', route)
-
-// for discover route 
 app.use("/api/discover", rout)
 
-// test route 
+// Test route 
 app.get("/", (req, res) => {
-    res.json({ message: "express is running" })
+    res.json({ message: "Travel Cart API is running" })
 })
 
-app.listen(process.env.PORT, () => {
-    connectToDb()
-    console.log("server is running")
-})
+// Optimized Startup
+const PORT = process.env.PORT || 2100;
+
+app.listen(PORT, async () => {
+    try {
+        await connectToDb();
+        console.log(`🚀 Server is running on port ${PORT}`);
+    } catch (err) {
+        console.error("❌ Database connection failed:", err.message);
+    }
+});
