@@ -1,7 +1,14 @@
 import { User } from "../model/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+// importing file for importing email html 
+import fs from 'fs/promises'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { sendEmail } from "../utils/nodemailer.js"
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 // register user /api/user/register
 export const registerUser = async (req, res) => {
     try {
@@ -33,6 +40,17 @@ export const registerUser = async (req, res) => {
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
+        const emailPath = path.join(__dirname, '../utils/emailTemplate.html')
+        let textContent = await fs.readFile(emailPath, 'utf-8')
+        textContent = textContent.replace('{{name}}', name)
+
+        await sendEmail(
+            user.email,
+            'Welcome to Netflix_Clone',
+            textContent,
+            `<h1>hi ${user.name},welcome to our app!Thanks for signing in!</h1>`
+
+        )
         // return the response 
         res.status(201).json({
             success: true,
